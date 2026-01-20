@@ -7,7 +7,7 @@ import com.ges.vehiclegate.data.local.entity.VehicleEntryEntity
 
 @Database(
     entities = [VehicleEntryEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

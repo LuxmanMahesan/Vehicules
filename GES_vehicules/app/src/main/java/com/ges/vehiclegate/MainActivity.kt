@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
                 // Verifier si on est sur une page ou on ne doit pas interrompre
                 val isOnAddScreen = currentRoute == Routes.ADD
-                val isOnEditScreen = currentRoute?.startsWith("edit/") == true
+                val isOnEditScreen = currentRoute?.startsWith("edit_vehicle/") == true
 
                 // Afficher la popup seulement si:
                 // - Un changement de shift est necessaire

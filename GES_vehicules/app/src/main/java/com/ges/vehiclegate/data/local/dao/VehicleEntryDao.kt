@@ -18,18 +18,20 @@ interface VehicleEntryDao {
     suspend fun update(entry: VehicleEntryEntity)
 
     // Accueil: véhicules sur site (onSite = true)
+    // Triés par ordre d'arrivée: le plus ancien en haut, le plus récent en bas
     @Query("""
         SELECT * FROM vehicle_entries
         WHERE onSite = 1 AND archive = 0
-        ORDER BY arrivalAt DESC
+        ORDER BY arrivalAt ASC
     """)
     fun observeOnSiteVehicles(): Flow<List<VehicleEntryEntity>>
 
     // Véhicules du shift: TOUS les véhicules non archivés
+    // Triés par ordre d'arrivée: le plus ancien en haut, le plus récent en bas
     @Query("""
         SELECT * FROM vehicle_entries
         WHERE archive = 0
-        ORDER BY arrivalAt DESC
+        ORDER BY arrivalAt ASC
     """)
     fun observeShiftVehicles(): Flow<List<VehicleEntryEntity>>
 

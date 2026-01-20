@@ -84,16 +84,12 @@ class ShiftChangeWorker(
                     reportDate = reportDate
                 )
 
-                val shiftStartMillis = ShiftCalculator.getShiftStartMillis(previousShiftNumber, reportDate)
-                val shiftEndMillis = ShiftCalculator.getShiftEndMillis(previousShiftNumber, reportDate)
-
                 val dao = AppModule.provideDatabase(applicationContext).vehicleEntryDao()
 
-                // Récupérer tous les véhicules du shift:
-                // - Véhicules encore sur site (peu importe leur date d'arrivée)
-                // - Véhicules sortis durant ce shift
-                val vehiclesForReport = dao.observeShiftVehicles(shiftStartMillis, shiftEndMillis)
-                    .first()
+                // Récupérer TOUS les véhicules non archivés pour le rapport PDF:
+                // - Véhicules encore sur site (onSite = 1, peu importe leur date d'arrivée)
+                // - Véhicules sortis durant ce shift (onSite = 0)
+                val vehiclesForReport = dao.getAllVehiclesForReport()
                     .map { it.toDomain() }
                     .sortedBy { it.arrivalAt }
 
@@ -103,8 +99,8 @@ class ShiftChangeWorker(
 
                     sendEmailWithPdfAutomated(applicationContext, pdfFile, shiftInfo)
 
-                    // Supprimer seulement les véhicules sortis durant ce shift
-                    dao.supprimerVehiculesSortisDurantShift(shiftStartMillis, shiftEndMillis)
+                    // Supprimer tous les véhicules sortis (onSite = 0) après envoi du PDF
+                    dao.supprimerVehiculesSortis()
                 }
 
                 ShiftScheduler.scheduleNextShiftChange(applicationContext)

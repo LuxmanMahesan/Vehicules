@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ges.vehiclegate.domain.model.AgentManager
@@ -44,10 +47,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Verifier periodiquement si un changement de shift est necessaire
+                // Verifier periodiquement si un changement de shift est necessaire (toutes les 5 secondes)
                 LaunchedEffect(Unit) {
                     while (true) {
-                        delay(30_000L)
+                        delay(5_000L) // Vérification toutes les 5 secondes pour détection rapide
                         if (AgentManager.needsShiftChange()) {
                             pendingShiftChange = true
                         }
@@ -58,6 +61,22 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(currentRoute) {
                     if (AgentManager.needsShiftChange()) {
                         pendingShiftChange = true
+                    }
+                }
+
+                // Verifier a chaque fois que l'app revient en premier plan
+                val lifecycleOwner = LocalLifecycleOwner.current
+                DisposableEffect(lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_RESUME) {
+                            if (AgentManager.needsShiftChange()) {
+                                pendingShiftChange = true
+                            }
+                        }
+                    }
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
                     }
                 }
 

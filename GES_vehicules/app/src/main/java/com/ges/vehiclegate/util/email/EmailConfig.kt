@@ -9,7 +9,7 @@ object EmailConfig {
     private const val KEY_APP_PASSWORD = "app_password"
     private const val KEY_TO_EMAIL = "to_email"
 
-    private const val DEFAULT_TO_EMAIL = "mahesanluxman@yahoo.fr"
+    private const val DEFAULT_TO_EMAIL = "ges.vehicule@gmail.com"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
